@@ -1,0 +1,96 @@
+<programa> ::= { <declaracao> }*
+
+<declaracao> ::= <declaracao_import> 
+             | <declaracao_variavel>
+             | <declaracao_funcao>
+             | <instrucao>
+
+<declaracao_import> ::= "import" <expressao_membro> ">>" <identificador>
+
+<declaracao_variavel> ::= <identificador> ":" <tipo> [ "=" <expressao> ] ";"
+
+<declaracao_funcao> ::= "func" <identificador> "(" [ <parametros> ] ")" "->" <tipo> <bloco_codigo>
+
+<parametros> ::= <tipo> <identificador> { "," <tipo> <identificador> }*
+
+<instrucao> ::= <instrucao_atribuicao>
+             | <instrucao_chamada>
+             | <instrucao_retorno>
+             | <instrucao_if>
+             | <instrucao_while>
+             | <instrucao_for>
+             | <instrucao_break>
+             | <instrucao_continue>
+             | <bloco_codigo>
+
+<instrucao_atribuicao> ::= <identificador> "=" <expressao> ";"
+
+<instrucao_chamada> ::= <identificador> "(" [ <argumentos> ] ")" ";"
+
+<instrucao_retorno> ::= "return" [ <expressao> ] ";"
+
+<instrucao_if> ::= "if" "(" <expressao> ")" <bloco_codigo> [ "else" <bloco_codigo> ]
+
+<instrucao_while> ::= "while" "(" <expressao> ")" <bloco_codigo>
+
+<instrucao_for> ::= "for" "(" <instrucao_atribuicao> <expressao> ";" <instrucao_atribuicao> ")" <bloco_codigo>
+
+<instrucao_break> ::= "break" ";"
+
+<instrucao_continue> ::= "continue" ";"
+
+<bloco_codigo> ::= "{" { <instrucao> }* "}"
+
+<argumentos> ::= <expressao> { "," <expressao> }*
+
+<expressao> ::= <expressao_logica>
+
+<expressao_logica> ::= <expressao_relacional> { ( "&&" | "||" ) <expressao_relacional> }*
+
+<expressao_relacional> ::= <expressao_aritmetica> [ ( "==" | "!=" | "<" | "<=" | ">" | ">=" ) <expressao_aritmetica> ]
+
+<expressao_aritmetica> ::= <termo> { ( "+" | "-" ) <termo> }*
+
+<termo> ::= <fator> { ( "*" | "/" ) <fator> }*
+
+<fator> ::= <numero> | <identificador> | <chamada_funcao> | "(" <expressao> ")"
+
+<chamada_funcao> ::= <identificador> "(" [ <argumentos> ] ")"
+
+<expressao_membro> ::= <identificador> { "." <identificador> }*
+
+<tipo> ::= "int" | "float" | "bool" | "string" | "void"
+
+<identificador> ::= <letra> { <letra> | <digito> }*
+
+<numero> ::= <numero_inteiro> | <numero_real>
+
+<numero_inteiro> ::= <digito>+
+
+<numero_real> ::= <digito>+ "." <digito>+
+
+<string> ::= '"' { <caractere_string> }* '"'
+
+<booleano> ::= "true" | "false"
+
+<letra> ::= "a".."z" | "A".."Z" | "_"
+
+digito ::= "0".."9"
+
+<caractere_string> ::= qualquer caractere exceto '"' ou '\\'
+
+<comentario> ::= "//" { qualquer_caractere }* | "/*" { qualquer_caractere }* "*/"
+
+<espaco_branco> ::= " " | "\t" | "\n" | "\r"
+
+
+-- Código de exemplo da linguagem Ambar.Code:
+--
+-- import IO.out >> o
+-- x: int = 3;
+-- y: int = 2;
+-- func sum(x: int, y: int) -> int {
+--      return x + y;
+-- }
+-- o(sum(x, y));
+
