@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include <memory>
-#include <vector>
 
 struct Expr {
     virtual std::string toC() const = 0;
@@ -11,13 +10,17 @@ struct Expr {
 struct ConstExpr : Expr {
     int value;
     ConstExpr(int v) : value(v) {}
-    std::string toC() const override { return std::to_string(value); }
+    std::string toC() const override {
+        return std::to_string(value);
+    }
 };
 
 struct VarExpr : Expr {
     std::string name;
     VarExpr(std::string n) : name(std::move(n)) {}
-    std::string toC() const override { return name; }
+    std::string toC() const override {
+        return name;
+    }
 };
 
 struct BinOpExpr : Expr {
@@ -30,17 +33,10 @@ struct BinOpExpr : Expr {
     }
 };
 
-struct Stmt {
-    virtual std::string toC() const = 0;
-    virtual ~Stmt() = default;
-};
-
-struct DeclStmt : Stmt {
+struct DeclStmt {
     std::string name, type;
     std::shared_ptr<Expr> value;
-    DeclStmt(std::string n, std::string t, std::shared_ptr<Expr> v)
-        : name(std::move(n)), type(std::move(t)), value(std::move(v)) {}
-    std::string toC() const override {
+    std::string toC() const {
         return type + " " + name + " = " + value->toC() + ";";
     }
 };

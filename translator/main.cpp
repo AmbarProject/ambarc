@@ -1,26 +1,29 @@
+#include <fstream>
 #include <iostream>
-#include "ast.hpp"
+#include "parser.hpp"
+#include "codegen.hpp"
 
 int main() {
-    std::vector<std::shared_ptr<Stmt>> program;
-
-    // Simula parsing
-    auto a = std::make_shared<DeclStmt>("a", "int", std::make_shared<ConstExpr>(10));
-    auto b = std::make_shared<DeclStmt>("b", "int", std::make_shared<ConstExpr>(20));
-    auto c = std::make_shared<DeclStmt>("c", "int",
-        std::make_shared<BinOpExpr>("+",
-            std::make_shared<VarExpr>("a"),
-            std::make_shared<VarExpr>("b")
-        )
-    );
-
-    program.push_back(a);
-    program.push_back(b);
-    program.push_back(c);
-
-    for (const auto& stmt : program) {
-        std::cout << stmt->toC() << std::endl;
+    std::ifstream in("exemplo.am");
+    if (!in) {
+        std::cerr << "Erro ao abrir exemplo.am\n";
+        return 1;
     }
+
+    std::string code((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+
+    Parser parser;
+    auto stmts = parser.parse(code);
+
+    std::string c_code = CodeGenerator::generate(stmts);
+
+    std::ofstream out("gerado.c");
+    out << c_code;
+    out.close();
+
+    std::system("gcc gerado.c -o gerado");
+    std::cout << "\n== Saída ==\n";
+    std::system("./gerado");
 
     return 0;
 }
