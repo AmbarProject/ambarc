@@ -1,6 +1,6 @@
-#line 2 "build/lex.yy.c"
+#line 2 "lex.yy.c"
 
-#line 4 "build/lex.yy.c"
+#line 4 "lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -524,16 +524,17 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "flex/ambar.l"
-#line 4 "flex/ambar.l"
+#line 1 "./flex/ambar.l"
+#line 4 "./flex/ambar.l"
+#include <iostream>
+#include <string>
+#include <cstring>
+#include <cstdlib>
 #include "parser.tab.h"
-#include <string.h>
-#include <stdlib.h>
 
-extern YYSTYPE yylval;
 void yyerror(const char *s);
-#line 536 "build/lex.yy.c"
-#line 537 "build/lex.yy.c"
+#line 537 "lex.yy.c"
+#line 538 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -750,10 +751,10 @@ YY_DECL
 		}
 
 	{
-#line 19 "flex/ambar.l"
+#line 20 "./flex/ambar.l"
 
 
-#line 757 "build/lex.yy.c"
+#line 758 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -812,243 +813,243 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 21 "flex/ambar.l"
+#line 22 "./flex/ambar.l"
 { return IMPORT; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 22 "flex/ambar.l"
+#line 23 "./flex/ambar.l"
 { return FUNC; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 23 "flex/ambar.l"
+#line 24 "./flex/ambar.l"
 { return RETURN; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 24 "flex/ambar.l"
+#line 25 "./flex/ambar.l"
 { return IF; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 25 "flex/ambar.l"
+#line 26 "./flex/ambar.l"
 { return ELSE; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 26 "flex/ambar.l"
+#line 27 "./flex/ambar.l"
 { return WHILE; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 27 "flex/ambar.l"
+#line 28 "./flex/ambar.l"
 { return FOR; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 28 "flex/ambar.l"
+#line 29 "./flex/ambar.l"
 { return BREAK; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 29 "flex/ambar.l"
+#line 30 "./flex/ambar.l"
 { return CONTINUE; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 31 "flex/ambar.l"
+#line 32 "./flex/ambar.l"
 { return INT; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 32 "flex/ambar.l"
+#line 33 "./flex/ambar.l"
 { return FLOAT; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 33 "flex/ambar.l"
+#line 34 "./flex/ambar.l"
 { return BOOL; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 34 "flex/ambar.l"
+#line 35 "./flex/ambar.l"
 { return STRING_T; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 35 "flex/ambar.l"
+#line 36 "./flex/ambar.l"
 { return VOID; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 37 "flex/ambar.l"
+#line 38 "./flex/ambar.l"
 { return BOOL_TRUE; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 38 "flex/ambar.l"
+#line 39 "./flex/ambar.l"
 { return BOOL_FALSE; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 40 "flex/ambar.l"
+#line 41 "./flex/ambar.l"
 { return AND; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 41 "flex/ambar.l"
+#line 42 "./flex/ambar.l"
 { return OR; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 42 "flex/ambar.l"
+#line 43 "./flex/ambar.l"
 { return EQ; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 43 "flex/ambar.l"
+#line 44 "./flex/ambar.l"
 { return NEQ; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 44 "flex/ambar.l"
+#line 45 "./flex/ambar.l"
 { return LE; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 45 "flex/ambar.l"
+#line 46 "./flex/ambar.l"
 { return GE; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 46 "flex/ambar.l"
+#line 47 "./flex/ambar.l"
 { return LT; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 47 "flex/ambar.l"
+#line 48 "./flex/ambar.l"
 { return GT; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 48 "flex/ambar.l"
+#line 49 "./flex/ambar.l"
 { return ADD; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 49 "flex/ambar.l"
+#line 50 "./flex/ambar.l"
 { return SUB; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 50 "flex/ambar.l"
+#line 51 "./flex/ambar.l"
 { return MUL; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 51 "flex/ambar.l"
+#line 52 "./flex/ambar.l"
 { return DIV; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 52 "flex/ambar.l"
+#line 53 "./flex/ambar.l"
 { return ASSIGN; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 53 "flex/ambar.l"
+#line 54 "./flex/ambar.l"
 { return ARROW; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 55 "flex/ambar.l"
+#line 56 "./flex/ambar.l"
 { return SEMI; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 56 "flex/ambar.l"
+#line 57 "./flex/ambar.l"
 { return COLON; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 57 "flex/ambar.l"
+#line 58 "./flex/ambar.l"
 { return COMMA; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 58 "flex/ambar.l"
+#line 59 "./flex/ambar.l"
 { return DOT; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 59 "flex/ambar.l"
+#line 60 "./flex/ambar.l"
 { return LPAREN; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 60 "flex/ambar.l"
+#line 61 "./flex/ambar.l"
 { return RPAREN; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 61 "flex/ambar.l"
+#line 62 "./flex/ambar.l"
 { return LBRACE; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 62 "flex/ambar.l"
+#line 63 "./flex/ambar.l"
 { return RBRACE; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 64 "flex/ambar.l"
+#line 65 "./flex/ambar.l"
 { yylval.real = atof(yytext); return NUM_REAL; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 65 "flex/ambar.l"
+#line 66 "./flex/ambar.l"
 { yylval.num = atoi(yytext); return NUM_INT; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 66 "flex/ambar.l"
+#line 67 "./flex/ambar.l"
 { yylval.id = strdup(yytext); return IDENTIFICADOR; }
 	YY_BREAK
 case 42:
 /* rule 42 can match eol */
 YY_RULE_SETUP
-#line 67 "flex/ambar.l"
+#line 68 "./flex/ambar.l"
 { yylval.id = strdup(yytext); return STRING; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 69 "flex/ambar.l"
+#line 70 "./flex/ambar.l"
 { }
 	YY_BREAK
 case 44:
 /* rule 44 can match eol */
 YY_RULE_SETUP
-#line 70 "flex/ambar.l"
+#line 71 "./flex/ambar.l"
 { }
 	YY_BREAK
 case 45:
 /* rule 45 can match eol */
 YY_RULE_SETUP
-#line 71 "flex/ambar.l"
+#line 72 "./flex/ambar.l"
 { }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 73 "flex/ambar.l"
-{ printf("Caractere inesperado: %s\n", yytext); }
+#line 74 "./flex/ambar.l"
+{ std::cerr << "Caractere inesperado: " << yytext << std::endl; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 75 "flex/ambar.l"
+#line 76 "./flex/ambar.l"
 ECHO;
 	YY_BREAK
-#line 1052 "build/lex.yy.c"
+#line 1053 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2053,5 +2054,5 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 75 "flex/ambar.l"
+#line 76 "./flex/ambar.l"
 

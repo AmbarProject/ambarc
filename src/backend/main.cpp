@@ -1,22 +1,31 @@
 #include <iostream>
+#include <cstdio>
 
-extern int ambar_parse();
-extern FILE* ambar_in;
+extern "C++" {
+    int yyparse(void);
+    extern FILE* yyin;
+}
 
 int main(int argc, char **argv) {
     if (argc > 1) {
-        ambar_in = fopen(argv[1], "r");
-        if (!ambar_in) {
+        yyin = fopen(argv[1], "r");
+        if (!yyin) {
             std::cerr << "Erro ao abrir o arquivo: " << argv[1] << std::endl;
             return 1;
         }
     }
 
-    if (ambar_parse() == 0) {
-        std::cout << "Código válido segundo a gramática Ambar.\n";
+    int result = yyparse();
+    
+    if (result == 0) {
+        std::cout << "Código válido segundo a gramática Ambar." << std::endl;
     } else {
-        std::cerr << "Erro na análise sintática.\n";
+        std::cerr << "Erro na análise sintática." << std::endl;
     }
 
-    return ambar_parse();
+    if (yyin && yyin != stdin) {
+        fclose(yyin);
+    }
+
+    return result;
 }

@@ -1,37 +1,35 @@
-CC = g++
-CFLAGS = -std=c++17 -Wall
-FLEX = flex
-BISON = bison
+# Diretórios
+BISON_DIR = ./bison
+FLEX_DIR = ./flex
 
-BUILD_DIR = build
-BISON_DIR = bison
-FLEX_DIR = flex
-SRC_DIR = .
+# Arquivos
+BISON_FILE = $(BISON_DIR)/parser.y
+FLEX_FILE = $(FLEX_DIR)/ambar.l
 
-BISON_SRC = parser.y
-FLEX_SRC = ambar.l
-MAIN_SRC = main.cpp
+# Saídas geradas
+BISON_OUTPUT_C = parser.tab.c
+BISON_OUTPUT_H = parser.tab.h
+FLEX_OUTPUT = lex.yy.c
 
-BISON_OUT = $(BUILD_DIR)/parser.tab.c
-BISON_HEADER = $(BUILD_DIR)/parser.tab.h
-FLEX_OUT = $(BUILD_DIR)/lex.yy.c
-TARGET = ambar_compiler
+# Compilador
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall
 
-all: dirs $(TARGET)
+# Alvo final
+TARGET = ambar
+SOURCES = main.cpp $(BISON_OUTPUT_C) $(FLEX_OUTPUT)
+OBJECTS = $(SOURCES:.cpp=.o)
 
-dirs:
-	mkdir -p $(BUILD_DIR)
+all: $(TARGET)
 
-$(BISON_OUT) $(BISON_HEADER): $(BISON_DIR)/$(BISON_SRC)
-	$(BISON) -d -o $(BISON_OUT) $(BISON_DIR)/$(BISON_SRC)
+$(BISON_OUTPUT_C) $(BISON_OUTPUT_H): $(BISON_FILE)
+	bison -d -o $(BISON_OUTPUT_C) $(BISON_FILE)
 
-$(FLEX_OUT): $(FLEX_DIR)/$(FLEX_SRC) $(BISON_HEADER)
-	$(FLEX) -o $(FLEX_OUT) $(FLEX_DIR)/$(FLEX_SRC)
+$(FLEX_OUTPUT): $(FLEX_FILE)
+	flex -o $(FLEX_OUTPUT) $(FLEX_FILE)
 
-$(TARGET): $(BISON_OUT) $(FLEX_OUT) $(SRC_DIR)/$(MAIN_SRC)
-	$(CC) $(CFLAGS) -I$(BUILD_DIR) -o $@ $(BISON_OUT) $(FLEX_OUT) $(SRC_DIR)/$(MAIN_SRC) -lfl
+$(TARGET): $(SOURCES)
+	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SOURCES)
 
 clean:
-	rm -rf $(BUILD_DIR) $(TARGET)
-
-.PHONY: all clean dirs
+	rm -f $(TARGET) *.o parser.tab.* lex.yy.c

@@ -1,11 +1,12 @@
 %option noyywrap
 
 %{
+#include <iostream>
+#include <string>
+#include <cstring>
+#include <cstdlib>
 #include "parser.tab.h"
-#include <string.h>
-#include <stdlib.h>
 
-extern YYSTYPE yylval;
 void yyerror(const char *s);
 %}
 
@@ -70,6 +71,6 @@ ESPACO      [ \t\r\n]+
 "/*"([^*]|\*+[^*/])*\*+"/" { }
 {ESPACO}        { }
 
-.               { printf("Caractere inesperado: %s\n", yytext); }
+.               { std::cerr << "Caractere inesperado: " << yytext << std::endl; }
 
 %%
