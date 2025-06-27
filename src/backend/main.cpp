@@ -22,17 +22,20 @@ int main(int argc, char **argv) {
     
     if (result == 0) {
         std::cout << "Código válido segundo a gramática Ambar." << std::endl;
+
+        if (root) {
+            std::cout << "AST:\n";
+            root->print();
+        } else {
+            std::cerr << "AST não foi construída.\n";
+        }
+
     } else {
         std::cerr << "Erro na análise sintática." << std::endl;
     }
 
     if (yyin && yyin != stdin) {
         fclose(yyin);
-    }
-
-    if (root) {
-        std::cout << "AST:\n";
-        root->print();
     }
 
     return result;

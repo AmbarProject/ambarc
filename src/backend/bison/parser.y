@@ -26,7 +26,28 @@ ASTNode* root;
     ASTNode* node;
 }
 
-%type <node> expressao expressao_logica expressao_relacional expressao_aritmetica termo fator chamada_funcao
+%type <node> 
+    programa 
+    lista_declaracoes 
+    declaracao 
+    declaracao_variavel 
+    instrucao 
+    instrucao_atribuicao 
+    instrucao_chamada 
+    instrucao_retorno 
+    instrucao_if 
+    instrucao_while 
+    instrucao_for 
+    instrucao_break 
+    instrucao_continue 
+    bloco_codigo 
+    expressao 
+    expressao_logica 
+    expressao_relacional 
+    expressao_aritmetica 
+    termo 
+    fator 
+    chamada_funcao
 
 %token <id> IDENTIFICADOR
 %token <num> NUM_INT
@@ -45,19 +66,19 @@ ASTNode* root;
 %%
 
 programa: 
-    lista_declaracoes
+    lista_declaracoes { root = $1; }
     ;
 
 lista_declaracoes: 
-    /* vazio */
-    | lista_declaracoes declaracao
+      declaracao { $$ = $1; }
+    | lista_declaracoes declaracao { $$ = $2 ? $2 : $1; }
     ;
 
 declaracao: 
-    declaracao_import
-    | declaracao_variavel
-    | declaracao_funcao
-    | instrucao
+      declaracao_import         { $$ = nullptr; }
+    | declaracao_variavel       { $$ = $1; }
+    | declaracao_funcao         { $$ = nullptr; }
+    | instrucao                 { $$ = $1; }
     ;
 
 declaracao_import: 
@@ -65,9 +86,8 @@ declaracao_import:
     ;
 
 declaracao_variavel: 
-    IDENTIFICADOR COLON tipo ASSIGN expressao SEMI
-    | IDENTIFICADOR COLON tipo SEMI
-    ;
+    IDENTIFICADOR COLON tipo ASSIGN expressao SEMI { $$ = new BinaryExpr("=", new NumberExpr(0), $5); }
+    | IDENTIFICADOR COLON tipo SEMI { $$ = nullptr; }
 
 declaracao_funcao: 
     FUNC IDENTIFICADOR LPAREN parametros_opt RPAREN ARROW tipo bloco_codigo
@@ -92,15 +112,15 @@ tipo:
     ;
 
 instrucao: 
-    instrucao_atribuicao
-    | instrucao_chamada
-    | instrucao_retorno
-    | instrucao_if
-    | instrucao_while
-    | instrucao_for
-    | instrucao_break
-    | instrucao_continue
-    | bloco_codigo
+      instrucao_atribuicao      { $$ = nullptr; }
+    | instrucao_chamada         { $$ = nullptr; }
+    | instrucao_retorno         { $$ = nullptr; }
+    | instrucao_if              { $$ = nullptr; }
+    | instrucao_while           { $$ = nullptr; }
+    | instrucao_for             { $$ = nullptr; }
+    | instrucao_break           { $$ = nullptr; }
+    | instrucao_continue        { $$ = nullptr; }
+    | bloco_codigo              { $$ = nullptr; }
     ;
 
 instrucao_atribuicao: 
@@ -157,7 +177,7 @@ argumentos:
     ;
 
 expressao: 
-    expressao_logica
+    expressao_logica { $$ = $1; }
     ;
 
 expressao_logica: 
