@@ -1,35 +1,39 @@
-# Diretórios
-BISON_DIR = ./bison
-FLEX_DIR = ./flex
+# Nome do executável
+EXEC = ambar
 
-# Arquivos
-BISON_FILE = $(BISON_DIR)/parser.y
-FLEX_FILE = $(FLEX_DIR)/ambar.l
+# Fontes
+FLEX_SRC = flex/ambar.l
+BISON_SRC = bison/parser.y
+AST_SRC = AST.hpp NumberExpr.hpp BinaryExpr.hpp
+SRC = main.cpp
 
-# Saídas geradas
-BISON_OUTPUT_C = parser.tab.c
-BISON_OUTPUT_H = parser.tab.h
-FLEX_OUTPUT = lex.yy.c
+# Arquivos gerados
+BISON_CPP = parser.tab.c
+BISON_HPP = parser.tab.h
+FLEX_CPP = lexer.cpp
 
-# Compilador
+# Compilador e flags
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall
+CXXFLAGS = -std=c++17 -Wall -I. 
+LDFLAGS = -lfl
 
-# Alvo final
-TARGET = ambar
-SOURCES = main.cpp $(BISON_OUTPUT_C) $(FLEX_OUTPUT)
-OBJECTS = $(SOURCES:.cpp=.o)
+# Regra padrão
+all: $(EXEC)
 
-all: $(TARGET)
+# Compilação do executável
+$(EXEC): $(SRC) $(FLEX_CPP) $(BISON_CPP) $(AST_SRC)
+	$(CXX) $(CXXFLAGS) -o $@ $(SRC) $(FLEX_CPP) $(BISON_CPP) $(LDFLAGS)
 
-$(BISON_OUTPUT_C) $(BISON_OUTPUT_H): $(BISON_FILE)
-	bison -d -o $(BISON_OUTPUT_C) $(BISON_FILE)
+# Geração dos arquivos do Bison
+$(BISON_CPP) $(BISON_HPP): $(BISON_SRC)
+	bison -d -o $(BISON_CPP) $(BISON_SRC)
 
-$(FLEX_OUTPUT): $(FLEX_FILE)
-	flex -o $(FLEX_OUTPUT) $(FLEX_FILE)
+# Geração do Flex
+$(FLEX_CPP): $(FLEX_SRC)
+	flex -o $(FLEX_CPP) $(FLEX_SRC)
 
-$(TARGET): $(SOURCES)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SOURCES)
-
+# Limpeza de arquivos gerados
 clean:
-	rm -f $(TARGET) *.o parser.tab.* lex.yy.c
+	rm -f $(EXEC) $(FLEX_CPP) $(BISON_CPP) $(BISON_HPP)
+
+.PHONY: all clean

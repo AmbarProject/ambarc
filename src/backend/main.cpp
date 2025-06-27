@@ -1,10 +1,13 @@
 #include <iostream>
 #include <cstdio>
+#include "AST.hpp"
 
 extern "C++" {
     int yyparse(void);
     extern FILE* yyin;
 }
+
+extern ASTNode* root;
 
 int main(int argc, char **argv) {
     if (argc > 1) {
@@ -25,6 +28,11 @@ int main(int argc, char **argv) {
 
     if (yyin && yyin != stdin) {
         fclose(yyin);
+    }
+
+    if (root) {
+        std::cout << "AST:\n";
+        root->print();
     }
 
     return result;

@@ -1,3 +1,9 @@
+%code requires {
+    #include "AST.hpp"
+    #include "BinaryExpr.hpp"
+    #include "NumberExpr.hpp"
+}
+
 %{
 #include <iostream>
 #include <string>
@@ -9,15 +15,18 @@ extern "C++" {
     int yyparse(void);
     extern FILE* yyin;
 }
-
 void yyerror(const char *s);
+ASTNode* root;
 %}
 
 %union {
     char* id;
     int num;
     float real;
+    ASTNode* node;
 }
+
+%type <node> expressao expressao_logica expressao_relacional expressao_aritmetica termo fator chamada_funcao
 
 %token <id> IDENTIFICADOR
 %token <num> NUM_INT
@@ -152,46 +161,45 @@ expressao:
     ;
 
 expressao_logica: 
-    expressao_relacional
-    | expressao_logica AND expressao_relacional
-    | expressao_logica OR expressao_relacional
+      expressao_relacional { $$ = $1; }
+    | expressao_logica AND expressao_relacional { $$ = new BinaryExpr("AND", $1, $3); }
+    | expressao_logica OR expressao_relacional { $$ = new BinaryExpr("OR", $1, $3); }
     ;
 
 expressao_relacional: 
-    expressao_aritmetica
-    | expressao_aritmetica EQ expressao_aritmetica
-    | expressao_aritmetica NEQ expressao_aritmetica
-    | expressao_aritmetica LT expressao_aritmetica
-    | expressao_aritmetica LE expressao_aritmetica
-    | expressao_aritmetica GT expressao_aritmetica
-    | expressao_aritmetica GE expressao_aritmetica
+      expressao_aritmetica { $$ = $1; }
+    | expressao_aritmetica EQ expressao_aritmetica { $$ = new BinaryExpr("==", $1, $3); }
+    | expressao_aritmetica NEQ expressao_aritmetica { $$ = new BinaryExpr("!=", $1, $3); }
+    | expressao_aritmetica LT expressao_aritmetica { $$ = new BinaryExpr("<", $1, $3); }
+    | expressao_aritmetica LE expressao_aritmetica { $$ = new BinaryExpr("<=", $1, $3); }
+    | expressao_aritmetica GT expressao_aritmetica { $$ = new BinaryExpr(">", $1, $3); }
+    | expressao_aritmetica GE expressao_aritmetica { $$ = new BinaryExpr(">=", $1, $3); }
     ;
 
 expressao_aritmetica: 
-    termo
-    | expressao_aritmetica ADD termo
-    | expressao_aritmetica SUB termo
+      termo { $$ = $1; }
+    | expressao_aritmetica ADD termo { $$ = new BinaryExpr("+", $1, $3); }
+    | expressao_aritmetica SUB termo { $$ = new BinaryExpr("-", $1, $3); }
     ;
 
 termo: 
-    fator
-    | termo MUL fator
-    | termo DIV fator
+      fator { $$ = $1; }
+    | termo MUL fator { $$ = new BinaryExpr("*", $1, $3); }
+    | termo DIV fator { $$ = new BinaryExpr("/", $1, $3); }
     ;
 
 fator: 
-    NUM_INT
-    | NUM_REAL
-    | IDENTIFICADOR
-    | STRING
-    | BOOL_TRUE
-    | BOOL_FALSE
-    | chamada_funcao
-    | LPAREN expressao RPAREN
+      NUM_INT { $$ = new NumberExpr($1); }
+    | NUM_REAL { $$ = new NumberExpr(static_cast<int>($1)); }
+    | IDENTIFICADOR { $$ = nullptr; }
+    | STRING { $$ = nullptr; }
+    | BOOL_TRUE { $$ = nullptr; }
+    | BOOL_FALSE { $$ = nullptr; }
+    | LPAREN expressao RPAREN { $$ = $2; }
     ;
 
 chamada_funcao: 
-    IDENTIFICADOR LPAREN argumentos_opt RPAREN
+    IDENTIFICADOR LPAREN argumentos_opt RPAREN { $$ = nullptr; }
     ;
 
 %%

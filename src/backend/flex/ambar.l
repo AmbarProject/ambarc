@@ -6,6 +6,7 @@
 #include <cstring>
 #include <cstdlib>
 #include "parser.tab.h"
+#include "AST.hpp"
 
 void yyerror(const char *s);
 %}
