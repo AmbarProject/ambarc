@@ -2,6 +2,7 @@
     #include "AST.hpp"
     #include "BinaryExpr.hpp"
     #include "NumberExpr.hpp"
+    #include "VarDecl.hpp"
 }
 
 %{
@@ -24,6 +25,7 @@ ASTNode* root;
     int num;
     float real;
     ASTNode* node;
+    std::string* str;
 }
 
 %type <node> 
@@ -48,6 +50,8 @@ ASTNode* root;
     termo 
     fator 
     chamada_funcao
+
+%type <str> tipo
 
 %token <id> IDENTIFICADOR
 %token <num> NUM_INT
@@ -86,8 +90,9 @@ declaracao_import:
     ;
 
 declaracao_variavel: 
-    IDENTIFICADOR COLON tipo ASSIGN expressao SEMI { $$ = new BinaryExpr("=", new NumberExpr(0), $5); }
-    | IDENTIFICADOR COLON tipo SEMI { $$ = nullptr; }
+    IDENTIFICADOR COLON tipo ASSIGN expressao SEMI { $$ = new VarDecl($1, *$3, $5); }
+    | IDENTIFICADOR COLON tipo SEMI { $$ = new VarDecl($1, *$3, nullptr); }
+  ;
 
 declaracao_funcao: 
     FUNC IDENTIFICADOR LPAREN parametros_opt RPAREN ARROW tipo bloco_codigo
@@ -104,11 +109,11 @@ parametros:
     ;
 
 tipo: 
-    INT
-    | FLOAT
-    | BOOL
-    | STRING_T
-    | VOID
+    INT         { $$ = new std::string("int"); }
+    | FLOAT     { $$ = new std::string("float"); }  
+    | BOOL      { $$ = new std::string("bool"); }
+    | STRING_T  {$$ = new std::string("string"); }
+    | VOID      { $$ = new std::string("void"); }
     ;
 
 instrucao: 
@@ -210,7 +215,7 @@ termo:
 
 fator: 
       NUM_INT { $$ = new NumberExpr($1); }
-    | NUM_REAL { $$ = new NumberExpr(static_cast<int>($1)); }
+    | NUM_REAL { $$ = new NumberExpr($1); }
     | IDENTIFICADOR { $$ = nullptr; }
     | STRING { $$ = nullptr; }
     | BOOL_TRUE { $$ = nullptr; }
