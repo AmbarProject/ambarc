@@ -6,17 +6,17 @@
 #include <cstring>
 #include <cstdlib>
 #include "parser.tab.h"
-#include "AST.hpp"
+#include "ast/AST.hpp"
 
 void yyerror(const char *s);
 %}
 
-DIGITO      [0-9]
-LETRA       [a-zA-Z_]
-NUM_INT     [0-9]+
-NUM_REAL    [0-9]+"."[0-9]+
-ID          [a-zA-Z_][a-zA-Z0-9_]*
-ESPACO      [ \t\r\n]+
+DIGIT      [0-9]
+LETTER     [a-zA-Z_]
+NUM_INT    [0-9]+
+NUM_REAL   [0-9]+\.[0-9]+
+ID         [a-zA-Z_][a-zA-Z0-9_]*
+WS         [ \t\r\n]+
 
 %%
 
@@ -63,15 +63,15 @@ ESPACO      [ \t\r\n]+
 "{"             { return LBRACE; }
 "}"             { return RBRACE; }
 
-{NUM_REAL}      { yylval.real = atof(yytext); return NUM_REAL; }
-{NUM_INT}       { yylval.num = atoi(yytext); return NUM_INT; }
-{ID}            { yylval.id = strdup(yytext); return IDENTIFICADOR; }
-\"([^\"\\]|\\.)*\"  { yylval.id = strdup(yytext); return STRING; }
+{NUM_REAL}       { yylval.real = atof(yytext); return NUM_REAL; }
+{NUM_INT}        { yylval.num = atoi(yytext); return NUM_INT; }
+{ID}             { yylval.id = strdup(yytext); return IDENTIFIER; }
+"\"([^\"\\]|\\.)*\""  { yylval.id = strdup(yytext); return STRING; }
 
-"//".*          { }
-"/*"([^*]|\*+[^*/])*\*+"/" { }
-{ESPACO}        { }
+"//".*           { }
+"/*"([^*]|\*+[^*/])*"*/" { }
+{WS}             { }
 
-.               { std::cerr << "Caractere inesperado: " << yytext << std::endl; }
+.                { std::cerr << "Unexpected character: " << yytext << std::endl; }
 
 %%

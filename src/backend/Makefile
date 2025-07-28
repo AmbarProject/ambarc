@@ -4,7 +4,7 @@ EXEC = ambar
 # Fontes
 FLEX_SRC = flex/ambar.l
 BISON_SRC = bison/parser.y
-AST_SRC = AST.hpp NumberExpr.hpp BinaryExpr.hpp
+AST_SRC = ast/AST.hpp ast/NumberExpr.hpp ast/BinaryExpr.hpp ast/Program.hpp ast/VarDecl.hpp
 SRC = main.cpp
 
 # Arquivos gerados

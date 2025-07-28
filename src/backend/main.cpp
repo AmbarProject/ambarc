@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstdio>
-#include "AST.hpp"
+#include "ast/AST.hpp"
 
 extern "C++" {
     int yyparse(void);

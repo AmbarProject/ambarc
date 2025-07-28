@@ -1,8 +1,10 @@
 %code requires {
-    #include "AST.hpp"
-    #include "BinaryExpr.hpp"
-    #include "NumberExpr.hpp"
-    #include "VarDecl.hpp"
+    #include "ast/AST.hpp"
+    #include "ast/BinaryExpr.hpp"
+    #include "ast/NumberExpr.hpp"
+    #include "ast/VarDecl.hpp"
+    #include "ast/Program.hpp"
+    #include "ast/AssignStmt.hpp"
 }
 
 %{
@@ -29,31 +31,31 @@ ASTNode* root;
 }
 
 %type <node> 
-    programa 
-    lista_declaracoes 
-    declaracao 
-    declaracao_variavel 
-    instrucao 
-    instrucao_atribuicao 
-    instrucao_chamada 
-    instrucao_retorno 
-    instrucao_if 
-    instrucao_while 
-    instrucao_for 
-    instrucao_break 
-    instrucao_continue 
-    bloco_codigo 
-    expressao 
-    expressao_logica 
-    expressao_relacional 
-    expressao_aritmetica 
-    termo 
-    fator 
-    chamada_funcao
+    program 
+    decl_list 
+    decl 
+    var_decl 
+    stmt 
+    assign_stmt 
+    call_stmt 
+    return_stmt 
+    if_stmt 
+    while_stmt 
+    for_stmt 
+    break_stmt 
+    continue_stmt 
+    block 
+    expr 
+    logic_expr 
+    rel_expr 
+    arith_expr 
+    term 
+    factor 
+    func_call
 
-%type <str> tipo
+%type <str> type
 
-%token <id> IDENTIFICADOR
+%token <id> IDENTIFIER
 %token <num> NUM_INT
 %token <real> NUM_REAL
 %token <id> STRING
@@ -65,170 +67,188 @@ ASTNode* root;
 %token ADD SUB MUL DIV ASSIGN ARROW
 %token SEMI COLON COMMA DOT LPAREN RPAREN LBRACE RBRACE
 
-%start programa
+%start program
 
 %%
 
-programa: 
-    lista_declaracoes { root = $1; }
+program:
+    decl_list {
+        Program* prog = dynamic_cast<Program*>($1);
+        if (!prog) {
+            prog = new Program();
+            prog->add($1);
+        }
+        root = prog;
+    }
+;
+
+
+decl_list:
+      decl {
+          Program* p = new Program();
+          p->add($1);
+          $$ = p;
+      }
+    | decl_list decl {
+          Program* p = dynamic_cast<Program*>($1);
+          p->add($2);
+          $$ = p;
+      }
+;
+
+
+
+decl: 
+      import_decl         { $$ = nullptr; }
+    | var_decl            { $$ = $1; }
+    | func_decl           { $$ = nullptr; }
+    | stmt                { $$ = $1; }
     ;
 
-lista_declaracoes: 
-      declaracao { $$ = $1; }
-    | lista_declaracoes declaracao { $$ = $2 ? $2 : $1; }
+import_decl: 
+    IMPORT IDENTIFIER ARROW IDENTIFIER SEMI
     ;
 
-declaracao: 
-      declaracao_import         { $$ = nullptr; }
-    | declaracao_variavel       { $$ = $1; }
-    | declaracao_funcao         { $$ = nullptr; }
-    | instrucao                 { $$ = $1; }
-    ;
-
-declaracao_import: 
-    IMPORT IDENTIFICADOR ARROW IDENTIFICADOR SEMI
-    ;
-
-declaracao_variavel: 
-    IDENTIFICADOR COLON tipo ASSIGN expressao SEMI { $$ = new VarDecl($1, *$3, $5); }
-    | IDENTIFICADOR COLON tipo SEMI { $$ = new VarDecl($1, *$3, nullptr); }
+var_decl: 
+    IDENTIFIER COLON type ASSIGN expr SEMI { $$ = new VarDecl($1, *$3, $5); }
+    | IDENTIFIER COLON type SEMI { $$ = new VarDecl($1, *$3, nullptr); }
   ;
 
-declaracao_funcao: 
-    FUNC IDENTIFICADOR LPAREN parametros_opt RPAREN ARROW tipo bloco_codigo
+func_decl: 
+    FUNC IDENTIFIER LPAREN opt_params RPAREN ARROW type block
     ;
 
-parametros_opt: 
-    /* vazio */
-    | parametros
+opt_params: 
+    /* empty */
+    | params
     ;
 
-parametros: 
-    tipo IDENTIFICADOR
-    | parametros COMMA tipo IDENTIFICADOR
+params: 
+    type IDENTIFIER
+    | params COMMA type IDENTIFIER
     ;
 
-tipo: 
+type: 
     INT         { $$ = new std::string("int"); }
     | FLOAT     { $$ = new std::string("float"); }  
     | BOOL      { $$ = new std::string("bool"); }
-    | STRING_T  {$$ = new std::string("string"); }
+    | STRING_T  { $$ = new std::string("string"); }
     | VOID      { $$ = new std::string("void"); }
     ;
 
-instrucao: 
-      instrucao_atribuicao      { $$ = nullptr; }
-    | instrucao_chamada         { $$ = nullptr; }
-    | instrucao_retorno         { $$ = nullptr; }
-    | instrucao_if              { $$ = nullptr; }
-    | instrucao_while           { $$ = nullptr; }
-    | instrucao_for             { $$ = nullptr; }
-    | instrucao_break           { $$ = nullptr; }
-    | instrucao_continue        { $$ = nullptr; }
-    | bloco_codigo              { $$ = nullptr; }
+stmt: 
+      assign_stmt      { $$ = $1; }
+    | call_stmt        { $$ = nullptr; }
+    | return_stmt      { $$ = nullptr; }
+    | if_stmt          { $$ = nullptr; }
+    | while_stmt       { $$ = nullptr; }
+    | for_stmt         { $$ = nullptr; }
+    | break_stmt       { $$ = nullptr; }
+    | continue_stmt    { $$ = nullptr; }
+    | block            { $$ = nullptr; }
     ;
 
-instrucao_atribuicao: 
-    IDENTIFICADOR ASSIGN expressao SEMI
+assign_stmt: 
+    IDENTIFIER ASSIGN expr SEMI { $$ = new AssignStmt($1, $3); }
     ;
 
-instrucao_chamada: 
-    IDENTIFICADOR LPAREN argumentos_opt RPAREN SEMI
+call_stmt: 
+    IDENTIFIER LPAREN opt_args RPAREN SEMI
     ;
 
-instrucao_retorno: 
-    RETURN expressao SEMI
+return_stmt: 
+    RETURN expr SEMI
     | RETURN SEMI
     ;
 
-instrucao_if: 
-    IF LPAREN expressao RPAREN bloco_codigo
-    | IF LPAREN expressao RPAREN bloco_codigo ELSE bloco_codigo
+if_stmt: 
+    IF LPAREN expr RPAREN block
+    | IF LPAREN expr RPAREN block ELSE block
     ;
 
-instrucao_while: 
-    WHILE LPAREN expressao RPAREN bloco_codigo
+while_stmt: 
+    WHILE LPAREN expr RPAREN block
     ;
 
-instrucao_for: 
-    FOR LPAREN instrucao_atribuicao expressao SEMI instrucao_atribuicao RPAREN bloco_codigo
+for_stmt: 
+    FOR LPAREN assign_stmt expr SEMI assign_stmt RPAREN block
     ;
 
-instrucao_break: 
+break_stmt: 
     BREAK SEMI
     ;
 
-instrucao_continue: 
+continue_stmt: 
     CONTINUE SEMI
     ;
 
-bloco_codigo: 
-    LBRACE lista_instrucao RBRACE
+block: 
+    LBRACE stmt_list RBRACE
     ;
 
-lista_instrucao: 
-    /* vazio */
-    | lista_instrucao instrucao
+stmt_list: 
+    /* empty */
+    | stmt_list stmt
     ;
 
-argumentos_opt: 
-    /* vazio */
-    | argumentos
+opt_args: 
+    /* empty */
+    | args
     ;
 
-argumentos: 
-    expressao
-    | argumentos COMMA expressao
+args: 
+    expr
+    | args COMMA expr
     ;
 
-expressao: 
-    expressao_logica { $$ = $1; }
+expr: 
+    logic_expr { $$ = $1; }
     ;
 
-expressao_logica: 
-      expressao_relacional { $$ = $1; }
-    | expressao_logica AND expressao_relacional { $$ = new BinaryExpr("AND", $1, $3); }
-    | expressao_logica OR expressao_relacional { $$ = new BinaryExpr("OR", $1, $3); }
+logic_expr: 
+      rel_expr { $$ = $1; }
+    | logic_expr AND rel_expr { $$ = new BinaryExpr("AND", $1, $3); }
+    | logic_expr OR rel_expr { $$ = new BinaryExpr("OR", $1, $3); }
     ;
 
-expressao_relacional: 
-      expressao_aritmetica { $$ = $1; }
-    | expressao_aritmetica EQ expressao_aritmetica { $$ = new BinaryExpr("==", $1, $3); }
-    | expressao_aritmetica NEQ expressao_aritmetica { $$ = new BinaryExpr("!=", $1, $3); }
-    | expressao_aritmetica LT expressao_aritmetica { $$ = new BinaryExpr("<", $1, $3); }
-    | expressao_aritmetica LE expressao_aritmetica { $$ = new BinaryExpr("<=", $1, $3); }
-    | expressao_aritmetica GT expressao_aritmetica { $$ = new BinaryExpr(">", $1, $3); }
-    | expressao_aritmetica GE expressao_aritmetica { $$ = new BinaryExpr(">=", $1, $3); }
+rel_expr: 
+      arith_expr { $$ = $1; }
+    | arith_expr EQ arith_expr { $$ = new BinaryExpr("==", $1, $3); }
+    | arith_expr NEQ arith_expr { $$ = new BinaryExpr("!=", $1, $3); }
+    | arith_expr LT arith_expr { $$ = new BinaryExpr("<", $1, $3); }
+    | arith_expr LE arith_expr { $$ = new BinaryExpr("<=", $1, $3); }
+    | arith_expr GT arith_expr { $$ = new BinaryExpr(">", $1, $3); }
+    | arith_expr GE arith_expr { $$ = new BinaryExpr(">=", $1, $3); }
     ;
 
-expressao_aritmetica: 
-      termo { $$ = $1; }
-    | expressao_aritmetica ADD termo { $$ = new BinaryExpr("+", $1, $3); }
-    | expressao_aritmetica SUB termo { $$ = new BinaryExpr("-", $1, $3); }
+arith_expr: 
+      term { $$ = $1; }
+    | arith_expr ADD term { $$ = new BinaryExpr("+", $1, $3); }
+    | arith_expr SUB term { $$ = new BinaryExpr("-", $1, $3); }
     ;
 
-termo: 
-      fator { $$ = $1; }
-    | termo MUL fator { $$ = new BinaryExpr("*", $1, $3); }
-    | termo DIV fator { $$ = new BinaryExpr("/", $1, $3); }
+term: 
+      factor { $$ = $1; }
+    | term MUL factor { $$ = new BinaryExpr("*", $1, $3); }
+    | term DIV factor { $$ = new BinaryExpr("/", $1, $3); }
     ;
 
-fator: 
+factor: 
       NUM_INT { $$ = new NumberExpr($1); }
     | NUM_REAL { $$ = new NumberExpr($1); }
-    | IDENTIFICADOR { $$ = nullptr; }
+    | IDENTIFIER { $$ = nullptr; }
     | STRING { $$ = nullptr; }
     | BOOL_TRUE { $$ = nullptr; }
     | BOOL_FALSE { $$ = nullptr; }
-    | LPAREN expressao RPAREN { $$ = $2; }
+    | LPAREN expr RPAREN { $$ = $2; }
     ;
 
-chamada_funcao: 
-    IDENTIFICADOR LPAREN argumentos_opt RPAREN { $$ = nullptr; }
+func_call: 
+    IDENTIFIER LPAREN opt_args RPAREN { $$ = nullptr; }
     ;
 
 %%
 
 void yyerror(const char *s) {
-    std::cerr << "Erro de sintaxe: " << s << std::endl;
+    std::cerr << "Syntax error: " << s << std::endl;
 }
