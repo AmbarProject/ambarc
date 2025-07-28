@@ -2,10 +2,21 @@
     #include "ast/AST.hpp"
     #include "ast/BinaryExpr.hpp"
     #include "ast/NumberExpr.hpp"
+    #include "ast/StringExpr.hpp"
+    #include "ast/BoolExpr.hpp"
+    #include "ast/IdentifierExpr.hpp"
+    #include "ast/NumberExpr.hpp"
     #include "ast/VarDecl.hpp"
     #include "ast/Program.hpp"
     #include "ast/AssignStmt.hpp"
+    #include "ast/Block.hpp"
+    #include "ast/IfStmt.hpp"
+    #include "ast/WhileStmt.hpp"
+    #include "ast/ReturnStmt.hpp"
+    #include <vector>
+    #include <string>
 }
+
 
 %{
 #include <iostream>
@@ -23,12 +34,15 @@ ASTNode* root;
 %}
 
 %union {
-    char* id;
     int num;
     float real;
+    bool bval;
+    char* id;
     ASTNode* node;
     std::string* str;
+    std::vector<ASTNode*>* stmts;
 }
+
 
 %type <node> 
     program 
@@ -54,6 +68,7 @@ ASTNode* root;
     func_call
 
 %type <str> type
+%type <stmts> stmt_list
 
 %token <id> IDENTIFIER
 %token <num> NUM_INT
@@ -109,10 +124,11 @@ import_decl:
     IMPORT IDENTIFIER ARROW IDENTIFIER SEMI
     ;
 
-var_decl: 
-    IDENTIFIER COLON type ASSIGN expr SEMI { $$ = new VarDecl($1, *$3, $5); }
-    | IDENTIFIER COLON type SEMI { $$ = new VarDecl($1, *$3, nullptr); }
-  ;
+var_decl:
+      IDENTIFIER COLON type ASSIGN expr SEMI { $$ = new VarDecl(std::string($1), *$3, $5); }
+    | IDENTIFIER COLON type SEMI             { $$ = new VarDecl(std::string($1), *$3, nullptr); }
+;
+
 
 func_decl: 
     FUNC IDENTIFIER LPAREN opt_params RPAREN ARROW type block
@@ -128,24 +144,24 @@ params:
     | params COMMA type IDENTIFIER
     ;
 
-type: 
-    INT         { $$ = new std::string("int"); }
-    | FLOAT     { $$ = new std::string("float"); }  
-    | BOOL      { $$ = new std::string("bool"); }
-    | STRING_T  { $$ = new std::string("string"); }
-    | VOID      { $$ = new std::string("void"); }
-    ;
+type:
+    INT       { $$ = new std::string("int"); }
+  | FLOAT     { $$ = new std::string("float"); }
+  | BOOL      { $$ = new std::string("bool"); }
+  | STRING_T  { $$ = new std::string("string"); }
+  | VOID      { $$ = new std::string("void"); }
+;
 
 stmt: 
       assign_stmt      { $$ = $1; }
     | call_stmt        { $$ = nullptr; }
-    | return_stmt      { $$ = nullptr; }
-    | if_stmt          { $$ = nullptr; }
-    | while_stmt       { $$ = nullptr; }
+    | return_stmt      { $$ = $1; }
+    | if_stmt          { $$ = $1; }
+    | while_stmt       { $$ = $1; }
     | for_stmt         { $$ = nullptr; }
     | break_stmt       { $$ = nullptr; }
     | continue_stmt    { $$ = nullptr; }
-    | block            { $$ = nullptr; }
+    | block            { $$ = $1; }
     ;
 
 assign_stmt: 
@@ -157,18 +173,26 @@ call_stmt:
     ;
 
 return_stmt: 
-    RETURN expr SEMI
-    | RETURN SEMI
-    ;
+      RETURN expr SEMI { $$ = new ReturnStmt($2); }
+    | RETURN SEMI { $$ = new ReturnStmt(); }
+;
+
 
 if_stmt: 
-    IF LPAREN expr RPAREN block
-    | IF LPAREN expr RPAREN block ELSE block
-    ;
+      IF LPAREN expr RPAREN block {
+          $$ = new IfStmt($3, $5);
+      }
+    | IF LPAREN expr RPAREN block ELSE block {
+          $$ = new IfStmt($3, $5, $7);
+      }
+;
 
-while_stmt: 
-    WHILE LPAREN expr RPAREN block
-    ;
+while_stmt:
+    WHILE LPAREN expr RPAREN block {
+        $$ = new WhileStmt($3, $5);
+    }
+;
+
 
 for_stmt: 
     FOR LPAREN assign_stmt expr SEMI assign_stmt RPAREN block
@@ -182,14 +206,29 @@ continue_stmt:
     CONTINUE SEMI
     ;
 
-block: 
-    LBRACE stmt_list RBRACE
-    ;
+block:
+    LBRACE stmt_list RBRACE {
+        Block* blk = new Block();
+        if ($2) {
+            for (ASTNode* stmt : *$2) {
+                blk->add(stmt);
+            }
+            delete $2;
+        }
+        $$ = blk;
+    }
+;
 
-stmt_list: 
-    /* empty */
-    | stmt_list stmt
-    ;
+stmt_list:
+      stmt {
+        $$ = new std::vector<ASTNode*>();
+        if ($1) $$->push_back($1);
+      }
+    | stmt_list stmt {
+        if ($2) $1->push_back($2);
+        $$ = $1;
+      }
+;
 
 opt_args: 
     /* empty */
@@ -234,14 +273,15 @@ term:
     ;
 
 factor: 
-      NUM_INT { $$ = new NumberExpr($1); }
-    | NUM_REAL { $$ = new NumberExpr($1); }
-    | IDENTIFIER { $$ = nullptr; }
-    | STRING { $$ = nullptr; }
-    | BOOL_TRUE { $$ = nullptr; }
-    | BOOL_FALSE { $$ = nullptr; }
+      NUM_INT        { $$ = new NumberExpr($1); }
+    | NUM_REAL       { $$ = new NumberExpr($1); }
+    | IDENTIFIER     { $$ = new IdentifierExpr($1); }
+    | STRING         { $$ = new StringExpr($1); }
+    | BOOL_TRUE      { $$ = new BoolExpr(true); }
+    | BOOL_FALSE     { $$ = new BoolExpr(false); }
     | LPAREN expr RPAREN { $$ = $2; }
     ;
+
 
 func_call: 
     IDENTIFIER LPAREN opt_args RPAREN { $$ = nullptr; }

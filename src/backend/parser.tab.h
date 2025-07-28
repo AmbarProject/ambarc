@@ -50,11 +50,21 @@ extern int yydebug;
     #include "ast/AST.hpp"
     #include "ast/BinaryExpr.hpp"
     #include "ast/NumberExpr.hpp"
+    #include "ast/StringExpr.hpp"
+    #include "ast/BoolExpr.hpp"
+    #include "ast/IdentifierExpr.hpp"
+    #include "ast/NumberExpr.hpp"
     #include "ast/VarDecl.hpp"
     #include "ast/Program.hpp"
     #include "ast/AssignStmt.hpp"
+    #include "ast/Block.hpp"
+    #include "ast/IfStmt.hpp"
+    #include "ast/WhileStmt.hpp"
+    #include "ast/ReturnStmt.hpp"
+    #include <vector>
+    #include <string>
 
-#line 58 "parser.tab.h"
+#line 68 "parser.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -115,15 +125,17 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 25 "bison/parser.y"
+#line 36 "bison/parser.y"
 
-    char* id;
     int num;
     float real;
+    bool bval;
+    char* id;
     ASTNode* node;
     std::string* str;
+    std::vector<ASTNode*>* stmts;
 
-#line 127 "parser.tab.h"
+#line 139 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
