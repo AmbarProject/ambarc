@@ -63,10 +63,16 @@ WS         [ \t\r\n]+
 "{"             { return LBRACE; }
 "}"             { return RBRACE; }
 
+\"([^\"\\]|\\.)*\"  {
+    std::string raw(yytext);
+    std::string cleaned = raw.substr(1, raw.size() - 2);
+    yylval.str = new std::string(cleaned);
+    return STRING;
+}
+
 {NUM_REAL}       { yylval.real = atof(yytext); return NUM_REAL; }
 {NUM_INT}        { yylval.num = atoi(yytext); return NUM_INT; }
 {ID}             { yylval.id = strdup(yytext); return IDENTIFIER; }
-"\"([^\"\\]|\\.)*\""  { yylval.id = strdup(yytext); return STRING; }
 
 "//".*           { }
 "/*"([^*]|\*+[^*/])*"*/" { }

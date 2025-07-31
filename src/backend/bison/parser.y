@@ -73,7 +73,7 @@ ASTNode* root;
 %token <id> IDENTIFIER
 %token <num> NUM_INT
 %token <real> NUM_REAL
-%token <id> STRING
+%token <str> STRING
 %token BOOL_TRUE BOOL_FALSE
 
 %token IMPORT FUNC RETURN IF ELSE WHILE FOR BREAK CONTINUE
@@ -276,7 +276,7 @@ factor:
       NUM_INT        { $$ = new NumberExpr($1); }
     | NUM_REAL       { $$ = new NumberExpr($1); }
     | IDENTIFIER     { $$ = new IdentifierExpr($1); }
-    | STRING         { $$ = new StringExpr($1); }
+    | STRING { $$ = new StringExpr(*$1); delete $1; }
     | BOOL_TRUE      { $$ = new BoolExpr(true); }
     | BOOL_FALSE     { $$ = new BoolExpr(false); }
     | LPAREN expr RPAREN { $$ = $2; }

@@ -3,17 +3,16 @@
 
 #include "AST.hpp"
 #include <string>
-#include <iostream>
 
 class StringExpr : public ASTNode {
 public:
     std::string value;
 
-    StringExpr(const std::string& value) : value(value) {}
+    StringExpr(const std::string& val) : value(val) {}
 
     void print(int indent = 0) const override {
-        std::string spacing(indent, ' ');
-        std::cout << spacing << "String(\"" << value << "\")\n";
+        std::string indentStr(indent, ' ');
+        std::cout << indentStr << "STRING: \"" << value << "\"" << std::endl;
     }
 };
 

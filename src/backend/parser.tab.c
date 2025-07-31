@@ -1578,7 +1578,7 @@ yyreduce:
 
   case 68: /* factor: STRING  */
 #line 279 "bison/parser.y"
-                     { (yyval.node) = new StringExpr((yyvsp[0].id)); }
+             { (yyval.node) = new StringExpr(*(yyvsp[0].str)); delete (yyvsp[0].str); }
 #line 1583 "parser.tab.c"
     break;
 
