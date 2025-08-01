@@ -1,8 +1,5 @@
-#ifndef BREAK_STMT_HPP
-#define BREAK_STMT_HPP
-
+#pragma once
 #include "AST.hpp"
-#include <vector>
 
 class BreakStmt : public ASTNode {
 public:
@@ -11,8 +8,6 @@ public:
     }
 
     std::vector<ASTNode*> getChildren() const override {
-        return {};  // BreakStmt has no children
+        return {};
     }
 };
-
-#endif

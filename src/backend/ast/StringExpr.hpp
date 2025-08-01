@@ -1,19 +1,19 @@
-#ifndef STRING_EXPR_HPP
-#define STRING_EXPR_HPP
-
+// ast/StringExpr.hpp
+#pragma once
 #include "AST.hpp"
-#include <string>
 
 class StringExpr : public ASTNode {
 public:
-    std::string value;
-
-    StringExpr(const std::string& val) : value(val) {}
-
-    void print(int indent = 0) const override {
-        std::string indentStr(indent, ' ');
-        std::cout << indentStr << "STRING: \"" << value << "\"" << std::endl;
+    StringExpr(const std::string& value) : value(value) {}
+    
+    std::string toString() const override {
+        return "StringExpr(value: " + value + ")";
     }
-};
+    
+    std::vector<ASTNode*> getChildren() const override {
+        return {};
+    }
 
-#endif
+private:
+    std::string value;
+};

@@ -1,20 +1,20 @@
+// ast/Block.hpp
 #pragma once
 #include "AST.hpp"
 #include <vector>
 
 class Block : public ASTNode {
 public:
+    void add(ASTNode* stmt) { statements.push_back(stmt); }
+    
+    std::string toString() const override {
+        return "Block";
+    }
+    
+    std::vector<ASTNode*> getChildren() const override {
+        return statements;
+    }
+
+private:
     std::vector<ASTNode*> statements;
-
-    void add(ASTNode* stmt) {
-        if (stmt) statements.push_back(stmt);
-    }
-
-    void print(int indent = 0) const override {
-        printIndent(indent);
-        std::cout << "Block" << std::endl;
-        for (auto stmt : statements) {
-            stmt->print(indent + 2);
-        }
-    }
 };

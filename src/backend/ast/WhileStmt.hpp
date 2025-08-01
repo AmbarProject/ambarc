@@ -1,17 +1,21 @@
+// ast/WhileStmt.hpp
 #pragma once
 #include "AST.hpp"
 
 class WhileStmt : public ASTNode {
 public:
-    ASTNode* condition;
-    ASTNode* body;
-
-    WhileStmt(ASTNode* cond, ASTNode* body) : condition(cond), body(body) {}
-
-    void print(int indent = 0) const override {
-        printIndent(indent);
-        std::cout << "WhileStmt" << std::endl;
-        if (condition) condition->print(indent + 2);
-        if (body) body->print(indent + 2);
+    WhileStmt(ASTNode* cond, ASTNode* body)
+        : cond(cond), body(body) {}
+    
+    std::string toString() const override {
+        return "WhileStmt";
     }
+    
+    std::vector<ASTNode*> getChildren() const override {
+        return {cond, body};
+    }
+
+private:
+    ASTNode* cond;
+    ASTNode* body;
 };

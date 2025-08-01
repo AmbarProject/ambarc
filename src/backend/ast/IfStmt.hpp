@@ -1,24 +1,24 @@
+// ast/IfStmt.hpp
 #pragma once
 #include "AST.hpp"
 
 class IfStmt : public ASTNode {
 public:
-    ASTNode* condition;
+    IfStmt(ASTNode* cond, ASTNode* thenBlock, ASTNode* elseBlock = nullptr)
+        : cond(cond), thenBlock(thenBlock), elseBlock(elseBlock) {}
+    
+    std::string toString() const override {
+        return "IfStmt";
+    }
+    
+    std::vector<ASTNode*> getChildren() const override {
+        std::vector<ASTNode*> children = {cond, thenBlock};
+        if (elseBlock) children.push_back(elseBlock);
+        return children;
+    }
+
+private:
+    ASTNode* cond;
     ASTNode* thenBlock;
     ASTNode* elseBlock;
-
-    IfStmt(ASTNode* cond, ASTNode* thenBlk, ASTNode* elseBlk = nullptr)
-        : condition(cond), thenBlock(thenBlk), elseBlock(elseBlk) {}
-
-    void print(int indent = 0) const override {
-        printIndent(indent);
-        std::cout << "IfStmt" << std::endl;
-        if (condition) condition->print(indent + 2);
-        if (thenBlock) thenBlock->print(indent + 2);
-        if (elseBlock) {
-            printIndent(indent);
-            std::cout << "Else:" << std::endl;
-            elseBlock->print(indent + 2);
-        }
-    }
 };

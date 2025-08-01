@@ -1,20 +1,12 @@
-// ast/ForStmt.hpp
-#ifndef FOR_STMT_HPP
-#define FOR_STMT_HPP
-
+#pragma once
 #include "AST.hpp"
+
+class Block; // Forward declaration
 
 class ForStmt : public ASTNode {
 public:
-    ForStmt(ASTNode* init, ASTNode* cond, ASTNode* update, ASTNode* body)
+    ForStmt(ASTNode* init, ASTNode* cond, ASTNode* update, Block* body)
         : init(init), cond(cond), update(update), body(body) {}
-
-    ~ForStmt() override {
-        delete init;
-        delete cond;
-        delete update;
-        delete body;
-    }
 
     std::string toString() const override {
         return "ForStmt";
@@ -33,7 +25,5 @@ private:
     ASTNode* init;
     ASTNode* cond;
     ASTNode* update;
-    ASTNode* body;
+    Block* body;
 };
-
-#endif

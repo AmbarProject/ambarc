@@ -1,34 +1,22 @@
-#ifndef CALL_EXPR_HPP
-#define CALL_EXPR_HPP
-
+#pragma once
 #include "AST.hpp"
-#include <string>
 #include <vector>
+#include <string>
 
 class CallExpr : public ASTNode {
-    std::string callee;
-    std::vector<ASTNode*> arguments;
-
 public:
-    CallExpr(std::string funcName, std::vector<ASTNode*> args)
-        : callee(std::move(funcName)), arguments(std::move(args)) {}
-
-    ~CallExpr() override {
-        for (auto arg : arguments) {
-            delete arg;
-        }
-    }
+    CallExpr(const std::string& funcName, const std::vector<ASTNode*>& args)
+        : funcName(funcName), args(args) {}
 
     std::string toString() const override {
-        return "CallExpr(callee: " + callee + ")";
+        return "CallExpr(func: " + funcName + ")";
     }
 
     std::vector<ASTNode*> getChildren() const override {
-        return arguments;
+        return args;
     }
 
-    const std::string& getCallee() const { return callee; }
-    const std::vector<ASTNode*>& getArguments() const { return arguments; }
+private:
+    std::string funcName;
+    std::vector<ASTNode*> args;
 };
-
-#endif

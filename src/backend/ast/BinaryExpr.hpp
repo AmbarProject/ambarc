@@ -1,24 +1,22 @@
-#ifndef BINARYEXPR_H
-#define BINARYEXPR_H
-
+// ast/BinaryExpr.hpp
+#pragma once
 #include "AST.hpp"
-#include <iostream>
-#include <string>
 
 class BinaryExpr : public ASTNode {
 public:
-    std::string op;
-    ASTNode* lhs;
-    ASTNode* rhs;
-
-    BinaryExpr(const std::string& o, ASTNode* l, ASTNode* r)
-        : op(o), lhs(l), rhs(r) {}
-
-    void print(int indent = 0) const override {
-        std::cout << std::string(indent, ' ') << "Binary(" << op << ")\n";
-        if (lhs) lhs->print(indent + 2);
-        if (rhs) rhs->print(indent + 2);
+    BinaryExpr(const std::string& op, ASTNode* left, ASTNode* right)
+        : op(op), left(left), right(right) {}
+    
+    std::string toString() const override {
+        return "BinaryExpr(op: " + op + ")";
     }
-};
+    
+    std::vector<ASTNode*> getChildren() const override {
+        return {left, right};
+    }
 
-#endif // BINARYEXPR_H
+private:
+    std::string op;
+    ASTNode* left;
+    ASTNode* right;
+};
